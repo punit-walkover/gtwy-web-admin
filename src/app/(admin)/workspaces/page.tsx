@@ -1,0 +1,154 @@
+"use client";
+
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { getWorkspaceRows, type WorkspaceFilter, type WorkspaceListPage } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+import { Segmented } from "@/components/ui/segmented";
+import { Tag } from "@/components/ui/tag";
+import { Table, TableWrap } from "@/components/ui/table";
+import { SectionHeading } from "@/components/data/section-heading";
+import {
+  PageStateBoundary,
+  TableShimmer,
+  ErrorState,
+} from "@/components/states";
+import { useRemoteData } from "@/hooks/useRemoteData";
+import { useDebounced, useHeaderSearch } from "@/components/layout/search-context";
+
+/** The Segmented labels, in the design's order, mapped to the route's `filter`. */
+const FILTER_FOR_LABEL: Record<string, WorkspaceFilter> = {
+  All: "all",
+  Paid: "paid",
+  Free: "free",
+  Blocked: "blocked",
+};
+
+const NOTHING: WorkspaceListPage = { rows: [], total: 0, page: 1, pageSize: 25 };
+
+export default function WorkspacesPage() {
+  const router = useRouter();
+  const [filter, setFilter] = React.useState<WorkspaceFilter>("all");
+  // The header box, settled — plan §4.5 Q20. Org id and org name only.
+  const q = useDebounced(useHeaderSearch().q);
+
+  const { state, data } = useRemoteData<WorkspaceListPage>(
+    (signal) => getWorkspaceRows({ filter, q }, signal),
+    [filter, q],
+    { placeholder: NOTHING, isEmpty: (page) => page.rows.length === 0 },
+  );
+  const rows = data?.rows ?? [];
+
+  return (
+    <>
+      <SectionHeading
+        kicker="Organisations"
+        title="Workspaces"
+        count={data?.total}
+        actions={
+          <>
+            <Segmented
+              name="wsf"
+              options={["All", "Paid", "Free", "Blocked"]}
+              onChange={(label) => setFilter(FILTER_FOR_LABEL[label] ?? "all")}
+            />
+            <Button variant="secondary">Export CSV</Button>
+          </>
+        }
+      />
+
+      <PageStateBoundary
+        state={state}
+        loading={<TableShimmer columns={10} rows={8} />}
+        empty={
+          /* The design's own empty branch, driven by the header search box. */
+          <div
+            style={{
+              padding: "40px 0",
+              borderBottom: "2px solid var(--color-divider)",
+              color: "var(--color-neutral-600)",
+            }}
+          >
+            No workspace matches “acme-holdings”. Search matches name, org id and
+            member e-mail.
+          </div>
+        }
+        error={<ErrorState message="The workspace list could not be loaded." />}
+      >
+        <TableWrap>
+          <Table>
+            <thead>
+              <tr>
+                <th>Workspace</th>
+                <th>Owner</th>
+                <th>Plan</th>
+                <th style={{ textAlign: "right" }}>Agents</th>
+                <th style={{ textAlign: "right" }}>Members</th>
+                <th style={{ textAlign: "right" }}>Calls · 30d</th>
+                <th style={{ textAlign: "right" }}>Spend · 30d</th>
+                <th style={{ textAlign: "right" }}>Error</th>
+                <th>Status</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((w) => (
+                <tr
+                  key={w.id}
+                  className="rowlink"
+                  onClick={() => router.push(`/workspaces/${w.id}`)}
+                >
+                  <td>
+                    <div style={{ fontWeight: 600 }}>{w.name}</div>
+                    <div
+                      style={{ fontSize: 11, color: "var(--color-neutral-600)" }}
+                    >
+                      org {w.id}
+                    </div>
+                  </td>
+                  <td style={{ fontSize: 13 }}>{w.owner}</td>
+                  <td>
+                    <Tag variant={w.planTag}>{w.plan}</Tag>
+                  </td>
+                  <td className="tnum" style={{ textAlign: "right" }}>
+                    {w.agents}
+                  </td>
+                  <td className="tnum" style={{ textAlign: "right" }}>
+                    {w.members}
+                  </td>
+                  <td className="tnum" style={{ textAlign: "right" }}>
+                    {w.callsFmt}
+                  </td>
+                  <td className="tnum" style={{ textAlign: "right" }}>
+                    {w.spendFmt}
+                  </td>
+                  <td
+                    className="tnum"
+                    style={{ textAlign: "right", color: w.errColor }}
+                  >
+                    {w.errRate}%
+                  </td>
+                  <td>
+                    <Tag variant={w.statusTag}>{w.status}</Tag>
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    <Button
+                      variant="ghost"
+                      style={{ fontSize: 12 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/workspaces/${w.id}`);
+                      }}
+                    >
+                      Open →
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableWrap>
+      </PageStateBoundary>
+    </>
+  );
+}

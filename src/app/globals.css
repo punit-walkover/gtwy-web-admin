@@ -1,0 +1,628 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Archivo — the three woff2 subsets lifted out of the design bundle.
+   Self-hosted so the app makes no third-party requests.
+   Each file is a variable-weight subset, so the same file backs 400/600/800.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* vietnamese */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 400 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("/fonts/archivo-vietnamese.woff2") format("woff2");
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
+    U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329,
+    U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 400 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("/fonts/archivo-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 400 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("/fonts/archivo-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Tokens — the design's base :root already resolved against its GTWY theme
+   override. These are the shipped values; nothing else may hardcode a hex.
+   ══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --color-bg: #f5f2ee;
+  --color-surface: #ece7e0;
+  --color-text: #1c1714;
+  --color-accent: #6b4a2e;
+  --color-accent-2: #7d5a3b;
+  --color-divider: color-mix(in srgb, #1c1714 14%, transparent);
+
+  --color-neutral-100: #f7f4f1;
+  --color-neutral-200: #e9e5e0;
+  --color-neutral-300: #d6d0c9;
+  --color-neutral-400: #b8b1a9;
+  --color-neutral-500: #99928a;
+  --color-neutral-600: #7b746c;
+  --color-neutral-700: #5e5851;
+  --color-neutral-800: #423d37;
+  --color-neutral-900: #2b2723;
+
+  --color-accent-100: #f6efe8;
+  --color-accent-200: #ebdccc;
+  --color-accent-300: #d9c0a6;
+  --color-accent-400: #bd9a76;
+  --color-accent-500: #8c6543;
+  --color-accent-600: #6b4a2e;
+  --color-accent-700: #533821;
+  --color-accent-800: #3c2817;
+  --color-accent-900: #261a10;
+
+  --color-accent-2-100: #f6efe8;
+  --color-accent-2-200: #ebdccc;
+  --color-accent-2-300: #d9c0a6;
+  --color-accent-2-400: #bd9a76;
+  --color-accent-2-500: #8c6543;
+  --color-accent-2-600: #6b4a2e;
+  --color-accent-2-700: #533821;
+  --color-accent-2-800: #3c2817;
+  --color-accent-2-900: #261a10;
+
+  /* The sidebar is a dark island inside a light app — not a theme. */
+  --color-sidebar-bg: #2a211c;
+  --color-sidebar-text: #f1eae2;
+  --color-sidebar-accent: #bd9a76;
+  --color-sidebar-divider: color-mix(in srgb, #f1eae2 14%, transparent);
+
+  --font-heading: "Archivo", system-ui, sans-serif;
+  --font-heading-weight: 800;
+  --font-body: "Archivo", system-ui, sans-serif;
+  --font-mono: monospace;
+
+  /* The placeholder grey the design inherits from the browser default. */
+  --color-placeholder: #757575;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    font-weight: 400;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--space-2);
+  }
+  h1 {
+    font-size: 42px;
+  }
+  h2 {
+    font-size: 32px;
+  }
+  h3 {
+    font-size: 25px;
+  }
+  h4 {
+    font-size: 20px;
+  }
+  h5 {
+    font-size: 16px;
+  }
+  h6 {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  p {
+    margin: 0 0 var(--space-3);
+  }
+  a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  /* Tailwind's preflight recolours placeholders; the design keeps the UA grey. */
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-placeholder);
+    opacity: 1;
+  }
+  a:hover {
+    color: var(--color-accent-600);
+  }
+  img {
+    display: block;
+    max-width: 100%;
+  }
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+}
+
+@layer components {
+  .text-muted {
+    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  }
+
+  /* — rules — */
+  .hr {
+    height: 2px;
+    border: 0;
+    margin: var(--space-4) 0;
+    background: var(--color-divider);
+  }
+
+  /* — buttons — */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    font-size: 13px;
+    line-height: 1.2;
+    color: var(--color-text);
+    background: transparent;
+    border: 1px solid transparent;
+    padding: calc(var(--space-2) * 0.85) var(--space-3);
+    border-radius: var(--radius-md);
+  }
+  .btn svg {
+    display: block;
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .btn-primary:not(:disabled):hover {
+    background: var(--color-accent-600);
+  }
+  .btn-primary:not(:disabled):active {
+    background: var(--color-accent-700);
+  }
+  .btn-secondary {
+    border-color: var(--color-divider);
+  }
+  .btn-secondary:not(:disabled):hover {
+    background: color-mix(in srgb, var(--color-text) 7%, transparent);
+  }
+  .btn-secondary:not(:disabled):active {
+    background: color-mix(in srgb, var(--color-text) 14%, transparent);
+  }
+  .btn-ghost {
+    color: var(--color-accent);
+    padding-inline: var(--space-1);
+  }
+  .btn-ghost:not(:disabled):hover {
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
+  .btn-ghost:not(:disabled):active {
+    background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  }
+  .btn-icon {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+  }
+  .btn-block {
+    width: 100%;
+    margin-top: var(--space-2);
+    justify-content: flex-start;
+    text-align: left;
+  }
+  /* §7 tap-target floor. The design is not responsive and draws every button at
+     36px; at phone widths the plan's 44px minimum governs. Padding is untouched,
+     so nothing moves at 1440/1280/768. */
+  @media (max-width: 420px) {
+    .btn,
+    .btn-icon {
+      min-height: 44px;
+    }
+    .btn-icon {
+      min-width: 44px;
+      height: auto;
+      width: auto;
+    }
+  }
+
+  /* — forms — */
+  .field > label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  }
+  .input {
+    width: 100%;
+    min-height: 36px;
+    padding: 6px 10px;
+    font: inherit;
+    font-size: 14px;
+    color: var(--color-text);
+    caret-color: var(--color-accent);
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+  }
+  .input:hover {
+    border-color: color-mix(in srgb, var(--color-text) 45%, transparent);
+  }
+  .input:focus-visible {
+    border-color: var(--color-accent);
+    outline-offset: 0;
+  }
+  textarea.input {
+    min-height: 90px;
+    resize: vertical;
+  }
+  .radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .radio input,
+  .seg-opt input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+  .radio .dot {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-divider);
+  }
+  .radio:hover .dot {
+    border-color: var(--color-accent);
+  }
+  .radio input:checked + .dot {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    box-shadow: inset 0 0 0 4px var(--color-bg);
+  }
+  .radio input:focus-visible + .dot {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .seg {
+    display: inline-flex;
+    overflow: hidden;
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+  }
+  .seg-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .seg-opt + .seg-opt {
+    border-left: 1px solid var(--color-divider);
+  }
+  .seg-opt:has(input:checked) {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .seg-opt:not(:has(input:checked)):hover {
+    background: color-mix(in srgb, var(--color-text) 7%, transparent);
+  }
+  .seg-opt:has(input:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+  }
+
+  /* — cards — */
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .card-kicker {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .card-title {
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    font-size: 17px;
+    line-height: 1.2;
+  }
+  .card-body {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.8;
+    flex: 1;
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  }
+  .elev-sm {
+    box-shadow: var(--shadow-sm);
+  }
+  .elev-md {
+    box-shadow: var(--shadow-md);
+  }
+  .elev-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* — tags — */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    padding: 3px 10px;
+    border-radius: calc(var(--radius-md) * 0.75);
+  }
+  .tag-accent {
+    background: var(--color-accent-100);
+    color: var(--color-accent-800);
+  }
+  .tag-accent-2 {
+    background: var(--color-accent-2-100);
+    color: var(--color-accent-2-800);
+  }
+  .tag-neutral {
+    background: var(--color-neutral-100);
+    color: var(--color-neutral-800);
+  }
+  .tag-outline {
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  /* — tables — */
+  .table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .table th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-text) 60%, transparent);
+    padding: var(--space-2);
+    /* The design's theme block flattens this to 1px — match the prototype. */
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .table td {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--color-divider);
+    vertical-align: middle;
+  }
+  .table tbody tr {
+    cursor: default;
+  }
+  .table tbody tr:hover {
+    background: color-mix(in srgb, var(--color-text) 4%, transparent);
+  }
+  /* Required on every table — this is how tables survive 375px. */
+  .table-wrap {
+    overflow-x: auto;
+  }
+  .rowlink {
+    cursor: pointer;
+  }
+
+  /* — dialog — */
+  .dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: var(--space-4);
+    background: color-mix(in srgb, var(--color-neutral-900) 50%, transparent);
+  }
+  .dialog {
+    width: min(440px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+  }
+  .dialog-title {
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    font-size: 20px;
+  }
+  .dialog-body {
+    font-size: 14px;
+    opacity: 0.85;
+  }
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  /* — sidebar (dark island) — */
+  .app-sidebar {
+    background: var(--color-sidebar-bg);
+    color: var(--color-sidebar-text);
+    border-right: 1px solid var(--color-sidebar-bg);
+  }
+  .app-sidebar a {
+    color: inherit;
+  }
+  .app-sidebar > div {
+    border-color: var(--color-sidebar-divider);
+    border-width: 1px;
+  }
+  .app-sidebar .nav-item {
+    color: color-mix(in srgb, #f1eae2 78%, transparent);
+    border-left: 3px solid transparent;
+  }
+  .app-sidebar .nav-item:hover {
+    background: color-mix(in srgb, #f1eae2 8%, transparent);
+    color: var(--color-sidebar-text);
+  }
+  .app-sidebar .nav-item[data-active="true"] {
+    color: var(--color-sidebar-text);
+    background: color-mix(in srgb, #f1eae2 10%, transparent);
+    border-left-color: var(--color-sidebar-accent);
+  }
+  .app-sidebar .nav-item .nav-idx {
+    color: color-mix(in srgb, #f1eae2 45%, transparent);
+  }
+  /* The design's `aside [style*="color:var(--color-neutral-600)"]` override never
+     matches the rendered markup, so these two keep the light-theme neutral. */
+  .app-sidebar .nav-section {
+    color: var(--color-neutral-600);
+  }
+  /* Likewise the logo square keeps `--color-accent`, not the sidebar tan. */
+  .app-sidebar .sidebar-mark {
+    background: var(--color-accent);
+  }
+  .app-sidebar .sidebar-foot-meta {
+    color: var(--color-neutral-600);
+  }
+  .app-sidebar .sidebar-foot-meta a {
+    color: var(--color-sidebar-accent);
+  }
+
+  /* — app header — the theme block flattens this to a 1px rule — */
+  .app-header {
+    border-bottom: 1px solid var(--color-divider);
+  }
+
+  /* — underline tabs — */
+  .tab:hover {
+    color: var(--color-accent);
+  }
+
+  /* — the accent-bordered callout, reused by the login error and error state — */
+  .callout {
+    border-left: 2px solid var(--color-accent);
+    padding: 8px 12px;
+    font-size: 13px;
+    background: var(--color-accent-100);
+    color: var(--color-accent-800);
+  }
+
+  /* — loading shimmer — */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-neutral-200) 25%,
+      color-mix(in srgb, var(--color-neutral-100) 80%, #fff) 50%,
+      var(--color-neutral-200) 75%
+    );
+    background-size: 200% 100%;
+    animation: gtwy-shimmer 1.4s ease infinite;
+  }
+  @keyframes gtwy-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .mono {
+    font-family: var(--font-mono);
+  }
+}
