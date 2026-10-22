@@ -1,0 +1,92 @@
+# Render Blueprint for the GTWY admin console.
+#
+# Every secret is `sync: false`: Render asks for its value when the Blueprint is
+# first applied and never reads it from this file. Values live only in the
+# Render dashboard, the same way `.env` stays out of git.
+#
+# NEXT_PUBLIC_* values are inlined into the browser bundle at build time, so
+# set them before the first deploy (and redeploy after changing them).
+
+services:
+  - type: web
+    name: gtwy-web-admin
+    runtime: node
+    # Free instances sleep when idle and wake on the next request. Switch to
+    # `starter` or above for an always-on console.
+    plan: free
+    buildCommand: npm ci && npm run build
+    # `next start` listens on Render's $PORT.
+    startCommand: npm start
+    # A static page that renders without touching any database.
+    healthCheckPath: /login
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+
+      # Session
+      - key: ADMIN_SESSION_SECRET
+        generateValue: true
+      - key: ENVIRONMENT
+        sync: false
+
+      # gtwy-node (sign-in, admin check, block/unblock, internal orgs)
+      - key: GTWY_API_BASE
+        sync: false
+      - key: INTERNAL_ALLOWED_EMAILS
+        sync: false
+
+      # MongoDB
+      - key: MONGODB_CONNECTION_URI
+        sync: false
+      - key: MONGODB_DATABASE_NAME
+        sync: false
+
+      # Postgres (conversation_logs)
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+
+      # Timescale: either the service URL, or the TIMESCALE_HOST/DB/USER/PASSWORD set
+      - key: TIMESCALE_SERVICE_URL
+        sync: false
+
+      # MSG91
+      - key: ADMIN_API_KEY
+        sync: false
+      - key: PUBLIC_REFERENCEID
+        sync: false
+      - key: MSG91_TIMEOUT_MS
+        value: "10000"
+      - key: NEXT_PUBLIC_REFERENCEID
+        sync: false
+      - key: NEXT_PUBLIC_MSG91_PROXY_AUTH_SRC
+        sync: false
+      - key: NEXT_PUBLIC_MSG91_REDIRECT_PATH
+        value: /login
+
+      # Lago
+      - key: BILLING_API_URL
+        sync: false
+      - key: BILLING_API_KEY
+        sync: false
+      - key: BILLING_API_TIMEOUT_MS
+        value: "10000"
+      - key: LAGO_CREDIT_RATE_USD
+        sync: false
+      - key: LAGO_PLAN_CODE_FREE
+        sync: false
+      - key: LAGO_PLAN_CODE_PAID
+        sync: false
+
+      # gtwy-node's key encryption secrets, for masking API keys
+      - key: Secret_IV
+        sync: false
+      - key: Encreaption_key
+        sync: false
