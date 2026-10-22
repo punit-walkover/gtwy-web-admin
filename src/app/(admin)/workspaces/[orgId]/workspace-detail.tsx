@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Tag } from "@/components/ui/tag";
 import { Tabs } from "@/components/ui/tabs";
 import { KpiStrip, KpiCell } from "@/components/data/kpi-strip";
-import { PageStateBoundary, TableShimmer, KpiShimmer, EmptyState, ErrorState } from "@/components/states";
+import { PageStateBoundary, Shimmer, TableShimmer, KpiShimmer, EmptyState, ErrorState } from "@/components/states";
 import { WorkspaceTabPanel } from "./tab-panels";
 import {
   TopUpDialog,
@@ -83,33 +83,42 @@ export function WorkspaceDetail({ orgId }: { orgId: string }) {
             </Link>{" "}
             / org {ws?.id ?? orgId}
           </h6>
-          <h2 className="flex items-center gap-3 flex-wrap" style={{ margin: 0 }}>
-            {ws?.name ?? ""}
-            <Tag variant={ws?.planTag ?? "tag-outline"} style={{ fontSize: 12 }}>
-              {ws?.plan ?? ""}
-            </Tag>
-            <Tag variant={ws?.statusTag ?? "tag-neutral"} style={{ fontSize: 12 }}>
-              {ws?.status ?? ""}
-            </Tag>
-            {/* The internal-org section's membership half (plan §5 item 11),
-                said in the design's own vocabulary: a tag in the row of tags
-                the header already renders. */}
-            {ws?.internal ? (
-              <Tag variant="tag-outline" style={{ fontSize: 12 }}>
-                internal
-              </Tag>
-            ) : null}
-          </h2>
-          <div
-            style={{
-              fontSize: 13,
-              color: "var(--color-neutral-700)",
-              marginTop: 6,
-            }}
-          >
-            Owner {ws?.owner ?? ""} · created {ws?.created ?? ""} · Lago customer{" "}
-            {ws?.lagoId ?? ""}
-          </div>
+          {!ws && state === "loading" ? (
+            <>
+              <Shimmer h={30} w={280} />
+              <Shimmer h={13} w={360} style={{ marginTop: 10 }} />
+            </>
+          ) : (
+            <>
+              <h2 className="flex items-center gap-3 flex-wrap" style={{ margin: 0 }}>
+                {ws?.name ?? ""}
+                <Tag variant={ws?.planTag ?? "tag-outline"} style={{ fontSize: 12 }}>
+                  {ws?.plan ?? ""}
+                </Tag>
+                <Tag variant={ws?.statusTag ?? "tag-neutral"} style={{ fontSize: 12 }}>
+                  {ws?.status ?? ""}
+                </Tag>
+                {/* The internal-org section's membership half (plan §5 item 11),
+                    said in the design's own vocabulary: a tag in the row of tags
+                    the header already renders. */}
+                {ws?.internal ? (
+                  <Tag variant="tag-outline" style={{ fontSize: 12 }}>
+                    internal
+                  </Tag>
+                ) : null}
+              </h2>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "var(--color-neutral-700)",
+                  marginTop: 6,
+                }}
+              >
+                Owner {ws?.owner ?? ""} · created {ws?.created ?? ""} · Lago customer{" "}
+                {ws?.lagoId ?? ""}
+              </div>
+            </>
+          )}
         </div>
         <div className="flex gap-2 max-[768px]:flex-wrap">
           {/* Read-only console (plan §6): both wallet and plan controls stay in
@@ -146,6 +155,7 @@ export function WorkspaceDetail({ orgId }: { orgId: string }) {
       </div>
 
       <PageStateBoundary
+        state={state}
         loading={
           <>
             <KpiShimmer columns={5} />

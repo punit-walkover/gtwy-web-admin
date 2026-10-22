@@ -373,8 +373,29 @@ export async function listEmbedsForOrg(orgId: string): Promise<RawEmbedRow[]> {
  */
 const MAX_ORG_EMBEDS = 500;
 
+/**
+ * The header search on the Embeds page: embed name, folder id, org id, or the
+ * workspace's msg91 name. Workspace names live in msg91, not Mongo, so they are
+ * resolved to org ids first and matched with `$in`.
+ */
+async function searchClause(raw: string | undefined): Promise<Record<string, unknown>> {
+  const q = (raw ?? "").trim();
+  if (!q) return {};
+
+  const pattern = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+  const or: Record<string, unknown>[] = [{ name: pattern }, { org_id: q }];
+  if (ObjectId.isValid(q) && q.length === 24) or.push({ _id: new ObjectId(q) });
+
+  const orgIds = [...(await orgNamesOrEmpty())]
+    .filter(([, name]) => name && pattern.test(name))
+    .map(([id]) => id);
+  if (orgIds.length) or.push({ org_id: { $in: orgIds } });
+
+  return { $or: or };
+}
+
 export async function listEmbeds(
-  options: { page?: number; pageSize?: number; orgId?: string } = {},
+  options: { page?: number; pageSize?: number; orgId?: string; q?: string } = {},
 ): Promise<RawEmbedList> {
   const pageSize = Math.min(Math.max(1, Math.trunc(options.pageSize || DEFAULT_PAGE_SIZE)), MAX_ORG_EMBEDS);
   const page = Math.max(1, Math.trunc(options.page || 1));
@@ -383,6 +404,7 @@ export async function listEmbeds(
   const filter = {
     type: "embed",
     ...(options.orgId ? { org_id: String(options.orgId) } : {}),
+    ...(await searchClause(options.q)),
   } as Filter<FolderDoc>;
 
   const [total, docs] = await Promise.all([

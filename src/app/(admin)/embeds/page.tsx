@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useRouter } from "next/navigation";
 import { getEmbedRows, type EmbedListPage } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -13,18 +14,63 @@ import {
   ErrorState,
 } from "@/components/states";
 import { useRemoteData } from "@/hooks/useRemoteData";
+import { useDebounced, useHeaderSearch } from "@/components/layout/search-context";
 
 const NOTHING: EmbedListPage = { rows: [], total: 0, page: 1, pageSize: 25 };
 
 export default function EmbedsPage() {
   const router = useRouter();
+  const q = useDebounced(useHeaderSearch().q);
 
   const { state, data } = useRemoteData<EmbedListPage>(
-    (signal) => getEmbedRows({}, signal),
-    [],
+    (signal) => getEmbedRows({ q }, signal),
+    [q],
     { placeholder: NOTHING, isEmpty: (page) => page.rows.length === 0 },
   );
-  const rows = data?.rows ?? [];
+
+  // Pages after the first, appended as the sentinel below the table scrolls
+  // into view. Reset whenever the first page is re-read.
+  const [more, setMore] = React.useState<EmbedListPage["rows"]>([]);
+  const [nextPage, setNextPage] = React.useState(2);
+  const [loadingMore, setLoadingMore] = React.useState(false);
+  const [moreError, setMoreError] = React.useState(false);
+  React.useEffect(() => {
+    setMore([]);
+    setNextPage(2);
+    setMoreError(false);
+  }, [data]);
+
+  const rows = React.useMemo(() => [...(data?.rows ?? []), ...more], [data, more]);
+  const hasMore = state === "ready" && !!data && rows.length < data.total;
+
+  const loadMore = React.useCallback(async () => {
+    if (!hasMore || loadingMore || moreError) return;
+    setLoadingMore(true);
+    try {
+      const page = await getEmbedRows({ page: nextPage, pageSize: data?.pageSize, q });
+      setMore((prev) => [...prev, ...page.rows]);
+      setNextPage((n) => n + 1);
+      if (page.rows.length === 0) setMoreError(true);
+    } catch {
+      setMoreError(true);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [hasMore, loadingMore, moreError, nextPage, data?.pageSize, q]);
+
+  const sentinel = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const el = sentinel.current;
+    if (!el || !hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void loadMore();
+      },
+      { rootMargin: "300px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
 
   return (
     <>
@@ -92,6 +138,15 @@ export default function EmbedsPage() {
             </tbody>
           </Table>
         </TableWrap>
+        <div ref={sentinel} aria-hidden />
+        {loadingMore ? <TableShimmer columns={9} rows={3} /> : null}
+        {moreError && hasMore ? (
+          <div className="flex justify-center py-4">
+            <Button variant="secondary" onClick={() => setMoreError(false)}>
+              Load more
+            </Button>
+          </div>
+        ) : null}
       </PageStateBoundary>
     </>
   );
