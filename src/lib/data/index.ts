@@ -525,10 +525,8 @@ export const getAdmins = async (signal?: AbortSignal) =>
  * the whole log rather than the page. `rows` is still `AuditEntry[]` and
  * `src/mocks/types.ts` is still the contract for it.
  *
- * The three filters plan §5 names are parameters here even though no control on
- * the page sets them — the design has no filter bar and the UI does not change.
- * They exist so the route's contract and this accessor's agree, and so QA can
- * drive them.
+ * The three filters plan §5 names are parameters here, set by the page's filter
+ * bar; `page` is set by its pager.
  *
  * **Read-only.** There is no `writeAudit` counterpart in this module and there
  * must not be one: the log is appended to only by the four proxied actions in
