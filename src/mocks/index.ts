@@ -121,4 +121,11 @@ export { getAdmins } from "@/lib/data";
  * whole set. `auditEntries` stays in `./audit` as the fixture
  * `tests/audit.test.ts` asserts the mapper's presentation rules against.
  */
-export { getAuditEntries, AUDIT_PAGE_SIZE, type AuditPage } from "@/lib/data";
+export {
+  getAuditEntries,
+  AUDIT_ACTIONS,
+  AUDIT_ACTION_LABEL,
+  AUDIT_PAGE_SIZE,
+  type AuditPage,
+  type RawAuditAction,
+} from "@/lib/data";

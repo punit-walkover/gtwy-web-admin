@@ -33,10 +33,8 @@ import {
  * `/api/admin/admins`: the collection is the page's only source, and there is
  * nothing honest to render without it. The page shows its error branch.
  *
- * The three filters exist because plan §5 names them. No control on the page
- * sets them today (the design has no filter bar and the UI does not change), so
- * they are exercised by `scripts/verify-d10.mjs` and by QA against the live
- * route.
+ * The three filters exist because plan §5 names them; the page's filter bar
+ * sets them, and its pager sets `page`.
  */
 
 export const dynamic = "force-dynamic";
