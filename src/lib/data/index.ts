@@ -331,6 +331,7 @@ export const getEmbedRows = async (
   const params = new URLSearchParams();
   params.set("page", String(options.page ?? 1));
   params.set("pageSize", String(options.pageSize ?? EMBED_PAGE_SIZE));
+  if (options.q) params.set("q", options.q);
 
   const raw = await adminFetch<RawEmbedList>(`/api/admin/embeds?${params.toString()}`, { signal });
   return { ...raw, rows: raw.rows.map(mapEmbedRow) };
@@ -413,6 +414,7 @@ export type { EmbedDetailPanel } from "@/lib/mappers/embeds";
 export interface EmbedListQuery {
   page?: number;
   pageSize?: number;
+  q?: string;
 }
 
 export interface EmbedListPage {
