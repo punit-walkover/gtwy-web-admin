@@ -7,6 +7,7 @@ import { PlatformKeyDialog } from "@/components/dialogs";
 import { Button } from "@/components/ui/button";
 import { Table, TableWrap } from "@/components/ui/table";
 import { SectionHeading } from "@/components/data/section-heading";
+import { useHeaderSearch } from "@/components/layout/search-context";
 import {
   PageStateBoundary,
   TableShimmer,
@@ -26,7 +27,16 @@ export default function PlatformKeysPage() {
     [],
     { placeholder: NONE, isEmpty: (d) => d.rows.length === 0 },
   );
-  const { rows, missing } = data ?? NONE;
+  const { rows: allRows, missing } = data ?? NONE;
+
+  // The header box narrows the table on service or allowing plan. Every key is
+  // already in hand, so the match is client-side and needs no debounce.
+  const q = useHeaderSearch().q.trim().toLowerCase();
+  const rows = q
+    ? allRows.filter(
+        (k) => k.service.toLowerCase().includes(q) || k.plans.toLowerCase().includes(q),
+      )
+    : allRows;
 
   return (
     <>
@@ -108,6 +118,16 @@ export default function PlatformKeysPage() {
                   </td>
                 </tr>
               ))}
+              {q && rows.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    style={{ textAlign: "center", color: "var(--color-neutral-600)" }}
+                  >
+                    No keys match “{q}”.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </TableWrap>

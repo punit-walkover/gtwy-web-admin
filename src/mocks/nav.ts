@@ -82,3 +82,9 @@ export const breadcrumbs: Record<string, string> = {
 
 export const headerSearchPlaceholder =
   "Search workspace by name, org id or member e-mail";
+
+/** Routes whose header box searches something other than workspaces. */
+export const headerSearchPlaceholders: Record<string, string> = {
+  "/usage": "Search models by name or service",
+  "/billing/keys": "Search keys by service or plan",
+};

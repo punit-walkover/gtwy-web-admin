@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import { breadcrumbs, headerSearchPlaceholder } from "@/mocks";
+import { breadcrumbs, headerSearchPlaceholder, headerSearchPlaceholders } from "@/mocks";
 import { getEmbedName, getWorkspaceName } from "@/lib/data";
 import { Input } from "@/components/ui/input";
 import { Tag } from "@/components/ui/tag";
@@ -53,8 +53,10 @@ function useCrumb() {
 
 export function Header({ onOpenDrawer }: { onOpenDrawer: () => void }) {
   const crumb = useCrumb();
-  // Live on `/workspaces`, for org id and org name (plan §4.5 Q20). The input is
-  // controlled now rather than uncontrolled; it renders exactly the same markup.
+  const pathname = usePathname();
+  // Live on `/workspaces`, for org id and org name (plan §4.5 Q20), and on
+  // `/usage` and `/billing/keys`, client-side over the loaded rows. The input is controlled now rather
+  // than uncontrolled; it renders exactly the same markup.
   const { q, setQ } = useHeaderSearch();
   return (
     <header
@@ -72,7 +74,7 @@ export function Header({ onOpenDrawer }: { onOpenDrawer: () => void }) {
       <div style={{ fontSize: 12, color: "var(--color-neutral-600)" }}>{crumb}</div>
       <div className="ml-auto flex items-center gap-[10px] max-[768px]:w-full max-[768px]:ml-0">
         <Input
-          placeholder={headerSearchPlaceholder}
+          placeholder={headerSearchPlaceholders[pathname] ?? headerSearchPlaceholder}
           value={q}
           onChange={(e) => setQ(e.target.value)}
           className="w-[340px] max-[768px]:w-full min-h-[32px] text-[13px]"
