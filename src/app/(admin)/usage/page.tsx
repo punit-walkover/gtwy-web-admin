@@ -8,6 +8,7 @@ import { Segmented } from "@/components/ui/segmented";
 import { Table, TableWrap } from "@/components/ui/table";
 import { UsageRow } from "@/components/data/bar-meter";
 import { SectionHeading } from "@/components/data/section-heading";
+import { useHeaderSearch } from "@/components/layout/search-context";
 import {
   PageStateBoundary,
   TableShimmer,
@@ -33,7 +34,17 @@ export default function UsagePage() {
     },
   );
 
-  const { services, models } = data ?? NOTHING;
+  const { services, models: allModels } = data ?? NOTHING;
+
+  // The header box narrows the models table. The whole window is already in
+  // hand, so this is a client-side match on model name or service — no request
+  // per keystroke, hence no debounce.
+  const q = useHeaderSearch().q.trim().toLowerCase();
+  const models = q
+    ? allModels.filter(
+        (m) => m.name.toLowerCase().includes(q) || m.service.toLowerCase().includes(q),
+      )
+    : allModels;
 
   return (
     <>
@@ -140,6 +151,16 @@ export default function UsagePage() {
                       </td>
                     </tr>
                   ))}
+                  {q && models.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        style={{ textAlign: "center", color: "var(--color-neutral-600)" }}
+                      >
+                        No models match “{q}”.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </Table>
             </TableWrap>
