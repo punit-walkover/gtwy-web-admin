@@ -14,24 +14,21 @@
  * this — rather than inventing a payload shape that nothing in either repo
  * documents. `success` is kept only to satisfy the widget's contract.
  *
- * Every variable here is `NEXT_PUBLIC_` and every one is genuinely public: the
- * widget runs in the browser, so it could not be otherwise. The reference id is
- * a public identifier both gtwy-ui and GTWY-admin ship client-side; the bundle
- * URL and the return path are not secrets by any reading. Nothing server-side
- * is exposed here, and no token of any kind is stored by this module.
+ * Every value here is genuinely public: the widget runs in the browser, so it
+ * could not be otherwise. The reference id is a public identifier both gtwy-ui
+ * and GTWY-admin ship client-side; the bundle URL and the return path are not
+ * secrets by any reading. Nothing server-side is exposed here, and no token of
+ * any kind is stored by this module.
+ *
+ * The reference id is not read here. It arrives as an argument, read by the
+ * login page on the server at request time (`env.msg91WidgetReferenceId`), so
+ * that setting it on the host takes effect without a rebuild. It is
+ * load-bearing twice over: the widget is configured with it, and it is also the
+ * DOM id of the element the widget renders itself into.
  */
 
 /** The query parameter msg91 appends on the way back. */
 export const PROXY_AUTH_TOKEN_PARAM = "proxy_auth_token";
-
-/**
- * Load-bearing twice over: the widget is configured with it, and it is also the
- * DOM id of the element the widget renders itself into. gtwy-node reads the
- * server-side half of the same pair as `PUBLIC_REFERENCEID` when it calls
- * `https://routes.msg91.com/api/${PUBLIC_REFERENCEID}/generateAuthToken`, so the
- * two must name the same msg91 application or the exchange fails.
- */
-export const MSG91_REFERENCE_ID = process.env.NEXT_PUBLIC_REFERENCEID || "";
 
 /** The widget bundle. gtwy-ui hardcodes this; here it stays overridable. */
 export const MSG91_SCRIPT_SRC =
@@ -106,17 +103,18 @@ export function loadScript(): Promise<void> {
  * anything from it, and ships no allowlist to compare it against.
  */
 export async function startMsg91SignIn({
+  referenceId,
   email,
   onFailure,
-}: { email?: string; onFailure?: (error: unknown) => void } = {}): Promise<void> {
-  if (!MSG91_REFERENCE_ID) {
+}: { referenceId: string; email?: string; onFailure?: (error: unknown) => void }): Promise<void> {
+  if (!referenceId) {
     throw new Error("NEXT_PUBLIC_REFERENCEID is not set, so msg91 sign-in cannot start.");
   }
 
   await loadScript();
 
   window.initVerification?.({
-    referenceId: MSG91_REFERENCE_ID,
+    referenceId,
     type: "authorization",
     addInfo: {
       redirect_path: MSG91_REDIRECT_PATH,

@@ -73,6 +73,11 @@ export const env = {
   // The admin console's own msg91 project: its users are the Admin access list.
   adminReferenceId: () => require_("ADMIN_REFERENCEID"),
   msg91TimeoutMs: () => int(10_000, "MSG91_TIMEOUT_MS"),
+  // The login widget's reference id. Read here, at request time, and handed to
+  // the client as a prop: a literal `process.env.NEXT_PUBLIC_*` is inlined at
+  // build time, so a host that sets env vars after the build would ship "".
+  // `read` looks the name up dynamically, which Next does not inline.
+  msg91WidgetReferenceId: () => read("NEXT_PUBLIC_REFERENCEID"),
 
   // Lago — lago.service.js.
   billingApiUrl: () => read("BILLING_API_URL"),
