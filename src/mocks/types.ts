@@ -158,21 +158,16 @@ export interface WorkspaceRow {
    * `"—"` only when Lago is unreachable. Plan §7: a provider outage degrades the
    * cells that provider owns, it does not blank the page — so the two columns
    * whose sole source is an optional upstream widen by exactly the em dash the
-   * design already renders for an absent value elsewhere. Every other field
-   * comes from Mongo or Timescale, which are primary: if they are down the page
-   * renders its error branch instead.
+   * design already renders for an absent value elsewhere. `agents` comes from
+   * Mongo, which is primary: if it is down the page renders its error branch
+   * instead.
+   *
+   * `null` while the plan is still loading: the "all" list is sent before Lago
+   * answers and the page fills this cell from a second request.
    */
-  plan: Plan | "—";
+  plan: Plan | "—" | null;
   planTag: TagVariant;
   agents: number;
-  /** `"—"` only when the org's msg91 member lookup failed — see `plan` above. */
-  members: number | "—";
-  callsFmt: string;
-  spendFmt: string;
-  errRate: string;
-  errColor: string;
-  status: "active" | "blocked";
-  statusTag: TagVariant;
 }
 
 export interface WorkspaceKpi {
@@ -254,7 +249,6 @@ export interface EmbedRow {
   wsId: string;
   agents: number;
   users: string;
-  calls: string;
   limit: string;
   theme: ThemeMode;
 }

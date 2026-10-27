@@ -394,7 +394,6 @@ export function WorkspaceTabPanel({
               <th>Folder id</th>
               <th style={{ textAlign: "right" }}>Agents</th>
               <th style={{ textAlign: "right" }}>End users</th>
-              <th style={{ textAlign: "right" }}>Calls · 30d</th>
               <th>Limit</th>
               <th />
             </tr>
@@ -412,7 +411,6 @@ export function WorkspaceTabPanel({
                 </td>
                 <td style={{ textAlign: "right" }}>{e.agents}</td>
                 <td style={{ textAlign: "right" }}>{e.users}</td>
-                <td style={{ textAlign: "right" }}>{e.calls}</td>
                 <td style={{ fontSize: 12 }}>{e.limit}</td>
                 <td style={{ textAlign: "right" }}>
                   <Button

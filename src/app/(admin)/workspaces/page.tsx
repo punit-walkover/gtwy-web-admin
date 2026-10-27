@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { getWorkspaceRows, type WorkspaceFilter, type WorkspaceListPage } from "@/lib/data";
+import {
+  applyWorkspacePlans,
+  getWorkspacePlans,
+  getWorkspaceRows,
+  resolveWorkspacePlans,
+  type ResolvedPlans,
+  type WorkspaceFilter,
+  type WorkspaceListPage,
+} from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
 import { Tag } from "@/components/ui/tag";
@@ -21,7 +29,6 @@ const FILTER_FOR_LABEL: Record<string, WorkspaceFilter> = {
   All: "all",
   Paid: "paid",
   Free: "free",
-  Blocked: "blocked",
 };
 
 const NOTHING: WorkspaceListPage = { rows: [], total: 0, page: 1, pageSize: 25 };
@@ -50,8 +57,26 @@ export default function WorkspacesPage() {
     setMoreError(false);
   }, [data]);
 
-  const rows = React.useMemo(() => [...(data?.rows ?? []), ...more], [data, more]);
-  const hasMore = state === "ready" && !!data && rows.length < data.total;
+  const loaded = React.useMemo(() => [...(data?.rows ?? []), ...more], [data, more]);
+  const hasMore = state === "ready" && !!data && loaded.length < data.total;
+
+  // The "all" list arrives before Lago has answered, with `plan: null`. Each
+  // batch of such rows asks for its plans once; answers are kept across filter
+  // and search changes, since an org's plan does not depend on either.
+  const [plans, setPlans] = React.useState<ResolvedPlans>({});
+  const asked = React.useRef(new Set<string>());
+  React.useEffect(() => {
+    const orgIds = loaded
+      .filter((w) => w.plan === null && !asked.current.has(w.id))
+      .map((w) => w.id);
+    if (orgIds.length === 0) return;
+    for (const id of orgIds) asked.current.add(id);
+    getWorkspacePlans(orgIds)
+      .catch(() => null)
+      .then((raw) => setPlans((prev) => ({ ...prev, ...resolveWorkspacePlans(orgIds, raw) })));
+  }, [loaded]);
+
+  const rows = React.useMemo(() => applyWorkspacePlans(loaded, plans), [loaded, plans]);
 
   const loadMore = React.useCallback(async () => {
     if (!hasMore || loadingMore || moreError) return;
@@ -97,7 +122,7 @@ export default function WorkspacesPage() {
           <>
             <Segmented
               name="wsf"
-              options={["All", "Paid", "Free", "Blocked"]}
+              options={["All", "Paid", "Free"]}
               onChange={(label) => setFilter(FILTER_FOR_LABEL[label] ?? "all")}
             />
             <Button variant="secondary">Export CSV</Button>
@@ -107,7 +132,7 @@ export default function WorkspacesPage() {
 
       <PageStateBoundary
         state={state}
-        loading={<TableShimmer columns={10} rows={8} />}
+        loading={<TableShimmer columns={5} rows={8} />}
         empty={
           /* The design's own empty branch, driven by the header search box. */
           <div
@@ -131,11 +156,6 @@ export default function WorkspacesPage() {
                 <th>Owner</th>
                 <th>Plan</th>
                 <th style={{ textAlign: "right" }}>Agents</th>
-                <th style={{ textAlign: "right" }}>Members</th>
-                <th style={{ textAlign: "right" }}>Calls · 30d</th>
-                <th style={{ textAlign: "right" }}>Spend · 30d</th>
-                <th style={{ textAlign: "right" }}>Error</th>
-                <th>Status</th>
                 <th />
               </tr>
             </thead>
@@ -156,28 +176,19 @@ export default function WorkspacesPage() {
                   </td>
                   <td style={{ fontSize: 13 }}>{w.owner}</td>
                   <td>
-                    <Tag variant={w.planTag}>{w.plan}</Tag>
+                    {w.plan === null ? (
+                      <span
+                        aria-label="Loading plan"
+                        style={{ color: "var(--color-neutral-600)" }}
+                      >
+                        …
+                      </span>
+                    ) : (
+                      <Tag variant={w.planTag}>{w.plan}</Tag>
+                    )}
                   </td>
                   <td className="tnum" style={{ textAlign: "right" }}>
                     {w.agents}
-                  </td>
-                  <td className="tnum" style={{ textAlign: "right" }}>
-                    {w.members}
-                  </td>
-                  <td className="tnum" style={{ textAlign: "right" }}>
-                    {w.callsFmt}
-                  </td>
-                  <td className="tnum" style={{ textAlign: "right" }}>
-                    {w.spendFmt}
-                  </td>
-                  <td
-                    className="tnum"
-                    style={{ textAlign: "right", color: w.errColor }}
-                  >
-                    {w.errRate}%
-                  </td>
-                  <td>
-                    <Tag variant={w.statusTag}>{w.status}</Tag>
                   </td>
                   <td style={{ textAlign: "right" }}>
                     <Button
@@ -197,7 +208,7 @@ export default function WorkspacesPage() {
           </Table>
         </TableWrap>
         <div ref={sentinel} aria-hidden />
-        {loadingMore ? <TableShimmer columns={10} rows={3} /> : null}
+        {loadingMore ? <TableShimmer columns={5} rows={3} /> : null}
         {moreError && hasMore ? (
           <div className="flex justify-center py-4">
             <Button variant="secondary" onClick={() => setMoreError(false)}>

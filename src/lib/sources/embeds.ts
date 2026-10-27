@@ -360,8 +360,8 @@ export const DEFAULT_PAGE_SIZE = 25;
  * Plan §5/03 says that tab reuses "the D5 agent/call joins, reused not
  * re-written", so it is `listEmbeds` with the org filter applied and no paging
  * — the design's tab has no pager. The one-query-for-the-whole-set rule holds
- * exactly as it does for the list: one `configurations` read and one
- * `daily_data` read for every folder in the tab, never one per row.
+ * exactly as it does for the list: one `configurations` read for every folder
+ * in the tab, never one per row.
  */
 export async function listEmbedsForOrg(orgId: string): Promise<RawEmbedRow[]> {
   return (await listEmbeds({ page: 1, pageSize: MAX_ORG_EMBEDS, orgId })).rows;
@@ -432,39 +432,14 @@ export async function listEmbeds(
 
   const folderIds = docs.map((d) => d._id.toString());
 
-  // Bridge ids for the whole page, so `daily_data` is one query rather than one
-  // per folder — the performance rule in plan §4.1.
-  const agentCol = await configurations();
-  const agentDocs = await agentCol
-    .find(
-      { folder_id: { $in: folderIds.flatMap(folderIdVariants) }, ...NOT_DELETED } as Filter<ConfigurationDoc>,
-      { projection: { _id: 1, folder_id: 1 }, maxTimeMS: MONGO_MAX_TIME_MS },
-    )
-    .toArray();
-
-  const bridgesByFolder = new Map<string, string[]>();
-  for (const agent of agentDocs) {
-    const key = String(agent.folder_id);
-    const list = bridgesByFolder.get(key);
-    if (list) list.push(agent._id.toString());
-    else bridgesByFolder.set(key, [agent._id.toString()]);
-  }
-
-  const [counts, daily, names] = await Promise.all([
-    agentCountsByFolder(folderIds),
-    dailyByBridge(agentDocs.map((a) => a._id.toString())),
-    orgNamesOrEmpty(),
-  ]);
+  // No `daily_data` read here: 30-day calls are on the embed's own page only,
+  // so the list stays on Mongo and msg91.
+  const [counts, names] = await Promise.all([agentCountsByFolder(folderIds), orgNamesOrEmpty()]);
 
   const rows: RawEmbedRow[] = docs.map((doc) => {
     const folderId = doc._id.toString();
     const orgId = String(doc.org_id ?? "");
     const count = counts.get(folderId) ?? { agents: 0, owners: 0 };
-
-    let calls30d = 0;
-    for (const bridgeId of bridgesByFolder.get(folderId) ?? []) {
-      calls30d += num(daily.get(bridgeId)?.calls);
-    }
 
     return {
       folderId,
@@ -473,7 +448,6 @@ export async function listEmbeds(
       orgName: names.get(orgId) ?? null,
       agents: count.agents,
       endUsers: count.owners,
-      calls30d,
       folderUsage: num(doc.folder_usage),
       folderLimit: num(doc.folder_limit),
       resetPeriod: doc.folder_limit_reset_period ?? "monthly",

@@ -61,6 +61,7 @@ import {
   type WorkspaceListPage,
   type WorkspaceListQuery,
   type WorkspaceListRaw,
+  type WorkspacePlansRaw,
 } from "@/lib/mappers/workspaces";
 import {
   mapKpis,
@@ -105,8 +106,11 @@ export { DEFAULT_USAGE_RANGE, USAGE_RANGES, type UsageRange } from "@/lib/metric
 
 /** The `/workspaces` filter vocabulary and page shape, for the same reason. */
 export {
+  applyWorkspacePlans,
+  resolveWorkspacePlans,
   DEFAULT_PAGE_SIZE,
   WORKSPACE_FILTERS,
+  type ResolvedPlans,
   type WorkspaceFilter,
   type WorkspaceListPage,
   type WorkspaceListQuery,
@@ -187,6 +191,20 @@ export const getWorkspaceRows = async (
   return mapWorkspaceList(
     await adminFetch<WorkspaceListRaw>(`/api/admin/workspaces?${params.toString()}`, { signal }),
   );
+};
+
+/**
+ * `GET /api/admin/workspaces/plans` — the Plan column for rows the "all" list
+ * sent without one (`plan === null`). Raw, because `applyWorkspacePlans` merges
+ * it into rows the page already holds.
+ */
+export const getWorkspacePlans = async (
+  orgIds: string[],
+  signal?: AbortSignal,
+): Promise<WorkspacePlansRaw> => {
+  if (orgIds.length === 0) return { plans: {}, degraded: false };
+  const params = new URLSearchParams({ orgIds: orgIds.join(",") });
+  return adminFetch<WorkspacePlansRaw>(`/api/admin/workspaces/plans?${params.toString()}`, { signal });
 };
 
 /**

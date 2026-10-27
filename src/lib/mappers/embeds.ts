@@ -30,7 +30,6 @@ export interface RawEmbedRow {
   orgName: string | null;
   agents: number;
   endUsers: number;
-  calls30d: number;
   folderUsage: number;
   folderLimit: number;
   resetPeriod: string;
@@ -135,7 +134,6 @@ export function mapEmbedRow(raw: RawEmbedRow): EmbedRow {
     wsId: raw.orgId,
     agents: raw.agents,
     users: thousands(raw.endUsers),
-    calls: fmt(raw.calls30d),
     limit: limitLabel(raw.folderUsage, raw.folderLimit, raw.resetPeriod),
     theme: raw.themeMode as ThemeMode,
   };

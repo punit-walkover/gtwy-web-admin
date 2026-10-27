@@ -78,7 +78,7 @@ export default function EmbedsPage() {
 
       <PageStateBoundary
         state={state}
-        loading={<TableShimmer columns={9} rows={5} />}
+        loading={<TableShimmer columns={8} rows={5} />}
         empty={
           <EmptyState
             title="No embeds yet"
@@ -96,7 +96,6 @@ export default function EmbedsPage() {
                 <th>Folder id</th>
                 <th style={{ textAlign: "right" }}>Agents</th>
                 <th style={{ textAlign: "right" }}>End users</th>
-                <th style={{ textAlign: "right" }}>Calls · 30d</th>
                 <th>Usage / limit</th>
                 <th>Theme</th>
                 <th />
@@ -116,7 +115,6 @@ export default function EmbedsPage() {
                   </td>
                   <td style={{ textAlign: "right" }}>{e.agents}</td>
                   <td style={{ textAlign: "right" }}>{e.users}</td>
-                  <td style={{ textAlign: "right" }}>{e.calls}</td>
                   <td style={{ fontSize: 12 }}>{e.limit}</td>
                   <td>
                     <Tag variant="tag-neutral">{e.theme}</Tag>
@@ -139,7 +137,7 @@ export default function EmbedsPage() {
           </Table>
         </TableWrap>
         <div ref={sentinel} aria-hidden />
-        {loadingMore ? <TableShimmer columns={9} rows={3} /> : null}
+        {loadingMore ? <TableShimmer columns={8} rows={3} /> : null}
         {moreError && hasMore ? (
           <div className="flex justify-center py-4">
             <Button variant="secondary" onClick={() => setMoreError(false)}>
