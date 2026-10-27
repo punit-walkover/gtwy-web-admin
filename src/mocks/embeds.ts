@@ -703,8 +703,6 @@ export const embedRows: EmbedRow[] = [
     "name": "Customer portal · Acme",
     "ws": "Acme Corp",
     "wsId": "74145",
-    "agents": 3,
-    "users": "2,544",
     "limit": "$247 / $4145 · monthly",
     "theme": "light"
   },
@@ -713,8 +711,6 @@ export const embedRows: EmbedRow[] = [
     "name": "Internal console · Acme",
     "ws": "Acme Corp",
     "wsId": "74145",
-    "agents": 3,
-    "users": "695",
     "limit": "$845 / $4881 · monthly",
     "theme": "dark"
   },
@@ -723,8 +719,6 @@ export const embedRows: EmbedRow[] = [
     "name": "Customer portal · Northwind",
     "ws": "Northwind Retail",
     "wsId": "11643",
-    "agents": 3,
-    "users": "1,106",
     "limit": "$51 / $1651 · monthly",
     "theme": "light"
   },
@@ -733,8 +727,6 @@ export const embedRows: EmbedRow[] = [
     "name": "Customer portal · Helix",
     "ws": "Helix Health",
     "wsId": "80211",
-    "agents": 3,
-    "users": "3,105",
     "limit": "$525 / $2372 · monthly",
     "theme": "light"
   },
@@ -743,8 +735,6 @@ export const embedRows: EmbedRow[] = [
     "name": "Customer portal · Papercut",
     "ws": "Papercut Studio",
     "wsId": "66104",
-    "agents": 3,
-    "users": "3,673",
     "limit": "$74 / $2363 · monthly",
     "theme": "light"
   },
@@ -753,8 +743,6 @@ export const embedRows: EmbedRow[] = [
     "name": "Customer portal · Tandem",
     "ws": "Tandem Labs",
     "wsId": "91502",
-    "agents": 3,
-    "users": "2,284",
     "limit": "$67 / $2575 · monthly",
     "theme": "light"
   }
@@ -1022,8 +1010,6 @@ export const wsEmbedRows: Record<string, EmbedRow[]> = {
       "name": "Customer portal · Northwind",
       "ws": "Northwind Retail",
       "wsId": "11643",
-      "agents": 3,
-      "users": "1,106",
       "limit": "$51 / $1651 · monthly",
       "theme": "light"
     }
@@ -1037,8 +1023,6 @@ export const wsEmbedRows: Record<string, EmbedRow[]> = {
       "name": "Customer portal · Papercut",
       "ws": "Papercut Studio",
       "wsId": "66104",
-      "agents": 3,
-      "users": "3,673",
       "limit": "$74 / $2363 · monthly",
       "theme": "light"
     }
@@ -1049,8 +1033,6 @@ export const wsEmbedRows: Record<string, EmbedRow[]> = {
       "name": "Customer portal · Acme",
       "ws": "Acme Corp",
       "wsId": "74145",
-      "agents": 3,
-      "users": "2,544",
       "limit": "$247 / $4145 · monthly",
       "theme": "light"
     },
@@ -1059,8 +1041,6 @@ export const wsEmbedRows: Record<string, EmbedRow[]> = {
       "name": "Internal console · Acme",
       "ws": "Acme Corp",
       "wsId": "74145",
-      "agents": 3,
-      "users": "695",
       "limit": "$845 / $4881 · monthly",
       "theme": "dark"
     }
@@ -1071,8 +1051,6 @@ export const wsEmbedRows: Record<string, EmbedRow[]> = {
       "name": "Customer portal · Helix",
       "ws": "Helix Health",
       "wsId": "80211",
-      "agents": 3,
-      "users": "3,105",
       "limit": "$525 / $2372 · monthly",
       "theme": "light"
     }
@@ -1083,8 +1061,6 @@ export const wsEmbedRows: Record<string, EmbedRow[]> = {
       "name": "Customer portal · Tandem",
       "ws": "Tandem Labs",
       "wsId": "91502",
-      "agents": 3,
-      "users": "2,284",
       "limit": "$67 / $2575 · monthly",
       "theme": "light"
     }

@@ -247,8 +247,6 @@ export interface EmbedRow {
   name: string;
   ws: string;
   wsId: string;
-  agents: number;
-  users: string;
   limit: string;
   theme: ThemeMode;
 }
