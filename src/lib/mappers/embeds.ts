@@ -28,9 +28,6 @@ export interface RawEmbedRow {
   orgId: string;
   /** `null` when msg91 could not be reached — the row still renders (plan §7). */
   orgName: string | null;
-  agents: number;
-  endUsers: number;
-  calls30d: number;
   folderUsage: number;
   folderLimit: number;
   resetPeriod: string;
@@ -133,9 +130,6 @@ export function mapEmbedRow(raw: RawEmbedRow): EmbedRow {
     name: raw.name,
     ws: orgLabel(raw.orgId, raw.orgName),
     wsId: raw.orgId,
-    agents: raw.agents,
-    users: thousands(raw.endUsers),
-    calls: fmt(raw.calls30d),
     limit: limitLabel(raw.folderUsage, raw.folderLimit, raw.resetPeriod),
     theme: raw.themeMode as ThemeMode,
   };

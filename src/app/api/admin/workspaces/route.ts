@@ -10,8 +10,10 @@ import {
 } from "@/lib/mappers/workspaces";
 
 /**
- * `GET /api/admin/workspaces?page&pageSize=25&filter=all|paid|free|blocked&q=`
- * → `{ rows, total, page, pageSize, degraded }` (plan §5 "02 — Workspaces list").
+ * `GET /api/admin/workspaces?page&pageSize=25&filter=all|paid|free&q=`
+ * → `{ rows, total, page, pageSize, plansPending, degraded }` (plan §5 "02 —
+ * Workspaces list"). With `filter=all` the rows are sent before Lago answers;
+ * the page fills the Plan column from `GET /api/admin/workspaces/plans`.
  *
  * Raw values only, per plan §1.3: numbers, enum codes, `null` for an absent
  * value. `"48.7k"`, `"$85.35"` and `"tag-accent"` are the mapper's job, not this

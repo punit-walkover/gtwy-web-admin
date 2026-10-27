@@ -159,39 +159,6 @@ async function findEmbedFolder(folderId: string): Promise<FolderDoc | null> {
   return doc ?? null;
 }
 
-/** Per-folder agent count and distinct owner count, for a page of folders. */
-async function agentCountsByFolder(
-  folderIds: string[],
-): Promise<Map<string, { agents: number; owners: number }>> {
-  const out = new Map<string, { agents: number; owners: number }>();
-  if (folderIds.length === 0) return out;
-
-  const variants = folderIds.flatMap(folderIdVariants);
-  const col = await configurations();
-  const rows = await col
-    .aggregate<{ _id: string | ObjectId; agents: number; owners: string[] }>(
-      [
-        { $match: { folder_id: { $in: variants }, ...NOT_DELETED } },
-        { $group: { _id: "$folder_id", agents: { $sum: 1 }, owners: { $addToSet: "$user_id" } } },
-      ],
-      { maxTimeMS: MONGO_MAX_TIME_MS },
-    )
-    .toArray();
-
-  for (const row of rows) {
-    const key = String(row._id);
-    const existing = out.get(key);
-    const owners = row.owners.filter((o) => o !== null && o !== undefined && o !== "").length;
-    if (existing) {
-      existing.agents += row.agents;
-      existing.owners += owners;
-    } else {
-      out.set(key, { agents: row.agents, owners });
-    }
-  }
-  return out;
-}
-
 /** Every non-deleted agent in one embed folder, with its version ids. */
 async function agentsInFolder(folderId: string): Promise<ConfigurationDoc[]> {
   const col = await configurations();
@@ -359,9 +326,7 @@ export const DEFAULT_PAGE_SIZE = 25;
  *
  * Plan §5/03 says that tab reuses "the D5 agent/call joins, reused not
  * re-written", so it is `listEmbeds` with the org filter applied and no paging
- * — the design's tab has no pager. The one-query-for-the-whole-set rule holds
- * exactly as it does for the list: one `configurations` read and one
- * `daily_data` read for every folder in the tab, never one per row.
+ * — the design's tab has no pager.
  */
 export async function listEmbedsForOrg(orgId: string): Promise<RawEmbedRow[]> {
   return (await listEmbeds({ page: 1, pageSize: MAX_ORG_EMBEDS, orgId })).rows;
@@ -430,50 +395,19 @@ export async function listEmbeds(
       .toArray(),
   ]);
 
-  const folderIds = docs.map((d) => d._id.toString());
-
-  // Bridge ids for the whole page, so `daily_data` is one query rather than one
-  // per folder — the performance rule in plan §4.1.
-  const agentCol = await configurations();
-  const agentDocs = await agentCol
-    .find(
-      { folder_id: { $in: folderIds.flatMap(folderIdVariants) }, ...NOT_DELETED } as Filter<ConfigurationDoc>,
-      { projection: { _id: 1, folder_id: 1 }, maxTimeMS: MONGO_MAX_TIME_MS },
-    )
-    .toArray();
-
-  const bridgesByFolder = new Map<string, string[]>();
-  for (const agent of agentDocs) {
-    const key = String(agent.folder_id);
-    const list = bridgesByFolder.get(key);
-    if (list) list.push(agent._id.toString());
-    else bridgesByFolder.set(key, [agent._id.toString()]);
-  }
-
-  const [counts, daily, names] = await Promise.all([
-    agentCountsByFolder(folderIds),
-    dailyByBridge(agentDocs.map((a) => a._id.toString())),
-    orgNamesOrEmpty(),
-  ]);
+  // No `daily_data` read and no `configurations` roll-up here: 30-day calls,
+  // agents and end users are on the embed's own page only, so the list is the
+  // `folders` page plus the cached msg91 org names.
+  const names = await orgNamesOrEmpty();
 
   const rows: RawEmbedRow[] = docs.map((doc) => {
-    const folderId = doc._id.toString();
     const orgId = String(doc.org_id ?? "");
-    const count = counts.get(folderId) ?? { agents: 0, owners: 0 };
-
-    let calls30d = 0;
-    for (const bridgeId of bridgesByFolder.get(folderId) ?? []) {
-      calls30d += num(daily.get(bridgeId)?.calls);
-    }
 
     return {
-      folderId,
+      folderId: doc._id.toString(),
       name: doc.name ?? "",
       orgId,
       orgName: names.get(orgId) ?? null,
-      agents: count.agents,
-      endUsers: count.owners,
-      calls30d,
       folderUsage: num(doc.folder_usage),
       folderLimit: num(doc.folder_limit),
       resetPeriod: doc.folder_limit_reset_period ?? "monthly",

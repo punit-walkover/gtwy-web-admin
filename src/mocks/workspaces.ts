@@ -4023,14 +4023,7 @@ export const workspaceRows: WorkspaceRow[] = [
     "owner": "priya@acme.io",
     "plan": "PAID",
     "planTag": "tag-accent",
-    "agents": 7,
-    "members": 6,
-    "callsFmt": "48.7k",
-    "spendFmt": "$85.35",
-    "errRate": "4.6",
-    "errColor": "inherit",
-    "status": "active",
-    "statusTag": "tag-neutral"
+    "agents": 7
   },
   {
     "id": "11643",
@@ -4038,14 +4031,7 @@ export const workspaceRows: WorkspaceRow[] = [
     "owner": "ops@northwind.co",
     "plan": "PAID",
     "planTag": "tag-accent",
-    "agents": 12,
-    "members": 6,
-    "callsFmt": "112.8k",
-    "spendFmt": "$160.64",
-    "errRate": "5.9",
-    "errColor": "var(--color-accent-700)",
-    "status": "active",
-    "statusTag": "tag-neutral"
+    "agents": 12
   },
   {
     "id": "80211",
@@ -4053,14 +4039,7 @@ export const workspaceRows: WorkspaceRow[] = [
     "owner": "dev@helix.health",
     "plan": "FREE",
     "planTag": "tag-neutral",
-    "agents": 7,
-    "members": 5,
-    "callsFmt": "78.3k",
-    "spendFmt": "$76.21",
-    "errRate": "7.7",
-    "errColor": "var(--color-accent-700)",
-    "status": "active",
-    "statusTag": "tag-neutral"
+    "agents": 7
   },
   {
     "id": "52930",
@@ -4068,14 +4047,7 @@ export const workspaceRows: WorkspaceRow[] = [
     "owner": "cto@kite.io",
     "plan": "PAID",
     "planTag": "tag-accent",
-    "agents": 4,
-    "members": 2,
-    "callsFmt": "49.2k",
-    "spendFmt": "$69.93",
-    "errRate": "6.5",
-    "errColor": "var(--color-accent-700)",
-    "status": "active",
-    "statusTag": "tag-neutral"
+    "agents": 4
   },
   {
     "id": "66104",
@@ -4083,14 +4055,7 @@ export const workspaceRows: WorkspaceRow[] = [
     "owner": "hello@papercut.studio",
     "plan": "FREE",
     "planTag": "tag-neutral",
-    "agents": 3,
-    "members": 2,
-    "callsFmt": "38.0k",
-    "spendFmt": "$86.09",
-    "errRate": "7.5",
-    "errColor": "var(--color-accent-700)",
-    "status": "active",
-    "statusTag": "tag-neutral"
+    "agents": 3
   },
   {
     "id": "30877",
@@ -4098,14 +4063,7 @@ export const workspaceRows: WorkspaceRow[] = [
     "owner": "it@bluefin.vc",
     "plan": "PAID",
     "planTag": "tag-accent",
-    "agents": 11,
-    "members": 2,
-    "callsFmt": "115.1k",
-    "spendFmt": "$179.28",
-    "errRate": "7.7",
-    "errColor": "var(--color-accent-700)",
-    "status": "active",
-    "statusTag": "tag-neutral"
+    "agents": 11
   },
   {
     "id": "91502",
@@ -4113,14 +4071,7 @@ export const workspaceRows: WorkspaceRow[] = [
     "owner": "team@tandemlabs.ai",
     "plan": "FREE",
     "planTag": "tag-neutral",
-    "agents": 4,
-    "members": 5,
-    "callsFmt": "33.6k",
-    "spendFmt": "$56.11",
-    "errRate": "8.8",
-    "errColor": "var(--color-accent-700)",
-    "status": "blocked",
-    "statusTag": "tag-accent"
+    "agents": 4
   },
   {
     "id": "47720",
@@ -4128,14 +4079,7 @@ export const workspaceRows: WorkspaceRow[] = [
     "owner": "dev@orbitmedia.in",
     "plan": "FREE",
     "planTag": "tag-neutral",
-    "agents": 6,
-    "members": 2,
-    "callsFmt": "61.3k",
-    "spendFmt": "$85.61",
-    "errRate": "5.5",
-    "errColor": "var(--color-accent-700)",
-    "status": "active",
-    "statusTag": "tag-neutral"
+    "agents": 6
   }
 ];
 
